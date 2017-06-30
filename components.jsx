@@ -59,11 +59,14 @@ function createClass(cls) {
 
 ReactApp = createClass({
     onInput(evt){
-        window.toElm(this.props.onInput(evt.target.value));
+        window.toElm(this.props.onInput, evt.target.value);
+    },
+    onClick(){
+        window.toElm(this.props.onClick)
     },
     render() {
         return (
-            <div>
+            <div onClick={this.onClick}>
                 Hello Realm
                 <input onInput={this.onInput} value={this.props.value} />
             </div>

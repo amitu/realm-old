@@ -1,8 +1,8 @@
 port module Main exposing (..)
 
+import Helpers exposing (toMsg, toVal0, toVal1)
 import Json.Decode as JD
 import Json.Encode as JE
-import Native.Helpers
 
 
 type alias Model =
@@ -20,8 +20,8 @@ reactModel : ReactModel -> JE.Value
 reactModel r =
     JE.object
         [ ( "value", JE.string r.value )
-        , ( "onClick", Native.Helpers.toNative r.onClick )
-        , ( "onInput", Native.Helpers.toNative r.onInput )
+        , ( "onClick", toVal0 r.onClick )
+        , ( "onInput", toVal1 r.onInput )
         ]
 
 
@@ -35,13 +35,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnClick ->
-            ( model, Cmd.none )
+            ( { model | value = "hello" }, Cmd.none )
 
         OnInput str ->
             ( { model | value = str }, Cmd.none )
 
         FromReact imsg ->
-            update (Native.Helpers.fromNative <| Debug.log "imsg" imsg) model
+            update (toMsg imsg) model
 
 
 serialize : Model -> JE.Value
