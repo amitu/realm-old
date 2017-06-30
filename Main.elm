@@ -9,6 +9,22 @@ type alias Model =
     { value : String }
 
 
+type alias ReactModel =
+    { value : String
+    , onClick : Msg
+    , onInput : String -> Msg
+    }
+
+
+reactModel : ReactModel -> JE.Value
+reactModel r =
+    JE.object
+        [ ( "value", JE.string r.value )
+        , ( "onClick", Native.Helpers.toNative r.onClick )
+        , ( "onInput", Native.Helpers.toNative r.onInput )
+        ]
+
+
 type Msg
     = OnClick
     | OnInput String
@@ -30,11 +46,11 @@ update msg model =
 
 serialize : Model -> JE.Value
 serialize model =
-    JE.object
-        [ ( "value", JE.string model.value )
-        , ( "onClick", Native.Helpers.toNative OnClick )
-        , ( "onInput", Native.Helpers.toNative OnInput )
-        ]
+    { value = model.value
+    , onClick = OnClick
+    , onInput = OnInput
+    }
+        |> reactModel
 
 
 publish_it : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
