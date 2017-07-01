@@ -59,7 +59,12 @@ function createClass(cls) {
 
 ReactApp = createClass({
     onInput(evt){
-        window.toElm(this.props.onInput, evt.target.value);
+        var value = evt.target.value;
+        if (value === value.toUpperCase()) {
+            window.toElm(this.props.onCaps, value);
+        } else {
+            window.toElm(this.props.onInput, value);
+        }
     },
     onClick(){
         window.toElm(this.props.onClick)

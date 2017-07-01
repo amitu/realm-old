@@ -1,8 +1,9 @@
 port module Main exposing (..)
 
-import Helpers exposing (toMsg, toVal0, toVal1)
+import Helpers exposing (msg, oMsg, strMsg, toMsg)
 import Json.Decode as JD
 import Json.Encode as JE
+import String
 
 
 type alias Model =
@@ -13,6 +14,7 @@ type alias ReactModel =
     { value : String
     , onClick : Msg
     , onInput : String -> Msg
+    , onCaps : CapString -> Msg
     }
 
 
@@ -20,13 +22,24 @@ reactModel : ReactModel -> JE.Value
 reactModel r =
     JE.object
         [ ( "value", JE.string r.value )
-        , ( "onClick", toVal0 r.onClick )
-        , ( "onInput", toVal1 r.onInput )
+        , ( "onClick", msg r.onClick )
+        , ( "onInput", strMsg r.onInput )
+        , ( "onCaps", oMsg capString r.onCaps )
         ]
+
+
+type CapString
+    = CapString String
+
+
+capString : JD.Decoder CapString
+capString =
+    JD.string |> JD.andThen (CapString >> JD.succeed)
 
 
 type Msg
     = OnClick
+    | OnCaps CapString
     | OnInput String
     | FromReact JE.Value
 
@@ -40,6 +53,9 @@ update msg model =
         OnInput str ->
             ( { model | value = str }, Cmd.none )
 
+        OnCaps (CapString str) ->
+            ( { model | value = String.toLower str }, Cmd.none )
+
         FromReact imsg ->
             update (toMsg imsg) model
 
@@ -49,6 +65,7 @@ serialize model =
     { value = model.value
     , onClick = OnClick
     , onInput = OnInput
+    , onCaps = OnCaps
     }
         |> reactModel
 

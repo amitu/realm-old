@@ -23,8 +23,8 @@ def task_elm():
             " > elm-stuff/build-artifacts/final.js"
         ],
         "file_dep": [
-            "dodo.py", "Main.elm", "components.jsx", "bridge.js",
-            "Native/Helpers.js",
+            "dodo.py", "Main.elm", "Helpers.elm", "components.jsx",
+            "bridge.js", "Native/Helpers.js",
             "node_modules/react/dist/react.min.js",
             "node_modules/react-dom/dist/react-dom.min.js",
         ],

@@ -11,32 +11,55 @@ window.toElm = function(ctr, msg){
     window.setTimeout(window._toElm, 0, ctr, msg);
 };
 
-window._toElm = function(ctr, msg){
+window._toElm = function(spec, msg){
     var final = null;
-    if (typeof ctr === "function") {
-        if (ctr.length !== 1) {
-            console.log("invalid ctr, has non 1-arity", ctr, ctr.length);
+    switch (spec.kind) {
+        case "msg":
+            final = spec.msg;
+            break;
+        case "string":
+            if (typeof msg !== "string") {
+                console.log(
+                    "invalid call, msg not string: ",
+                    typeof msg, msg, spec
+                );
+                return;
+            }
+            final = spec.ctr(msg);
+            break;
+        case "int":
+            if (typeof msg !== "number" || (data % 1) !== 0) {
+                console.log(
+                    "invalid call, msg not int: ",
+                    typeof msg, msg, spec
+                );
+                return;
+            }
+            final = spec.ctr(msg);
+            break;
+        case "float":
+            if (typeof msg !== "number") {
+                console.log(
+                    "invalid call, msg not float: ",
+                    typeof msg, msg, spec
+                );
+                return;
+            }
+            final = spec.ctr(msg);
+            break;
+        case "decoder":
+            var res = window._a2(
+                window._decodeValue, spec.decoder, msg
+            );
+            if (res.ctor === 'Err') {
+                console.log('invalid value `' + msg + '`:\n' + res._0);
+                return
+            }
+            final = spec.ctr(res._0);
+            break;
+        default:
+            console.log("unknown spec", spec, msg);
             return;
-        }
-
-        if (typeof msg !== "string") {
-            // currently we are assuming only strings can be passed to
-            // construct a full message. in future UI can also signal a
-            // integer: eg slider, or a float value. signalling more
-            // complex outputs should not be possible. Even integers etc
-            // can be transported over the bridge by round-tripping to string
-            console.log("invalid call, msg not string: ", typeof msg, msg);
-            return;
-        }
-
-        final = ctr(msg);
-    } else {
-        if (typeof msg !== "undefined") {
-            console.log("data passed to fully constructed message:", msg);
-            return;
-        }
-
-        final = ctr;
     }
 
     console.log("sending", final);
